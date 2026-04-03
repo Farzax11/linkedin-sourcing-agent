@@ -24,6 +24,7 @@ async function connectDB() {
     console.log('MongoDB connected');
   } catch (err) {
     console.error('MongoDB connection error:', err.message);
+    isConnected = false;
   }
 }
 
@@ -40,8 +41,10 @@ app.use('/api', messageRoutes);
 app.get('/api/health', (req, res) => res.json({
   status: 'ok',
   db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+  dbState: mongoose.connection.readyState,
   openai: !!process.env.OPENAI_API_KEY,
   mongoUri: process.env.MONGODB_URI ? 'set' : 'missing',
+  mongoUriPreview: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 40) + '...' : 'none',
 }));
 
 module.exports = app;
